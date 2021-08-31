@@ -1,0 +1,21 @@
+
+TODO:
+=====
+
+    - sunrise / sunset times
+        - load json for date
+        - get date, compare time to sunset
+    - json payload
+    - statuses:
+        - connected (support multiple?)
+        - disconnected 
+
+
+
+DONE:
+====
+
+    - sunrise / sunset times
+        - parse scraped data
+        - create JSON file
+
