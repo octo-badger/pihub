@@ -11,10 +11,10 @@ const Gpio = pigpio.Gpio;
 const DynamicEase = require('./lib/DynamicEase');
 const Settings = require('./lib/Settings');
 const settings = new Settings();
-let config = settings.load('config.json');
 
 async function go()
 {
+    let config = await settings.load('config.json');
     console.log(`sunstatus: ${JSON.stringify(await sunstatus.getData())}`);
 }
 go();
