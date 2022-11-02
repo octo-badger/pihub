@@ -1,9 +1,15 @@
+/*
+    needs better handling
+    Think I wrote this to allow async return of a value that is being polled
+    At the moment I think a call to checkDateAsync() will block if lastDate matches the current date (line 29-ish)
+*/
 
 const moment = require('moment');
 const fs = require('fs');
 
 let day = null;
 let lastDate = null;
+
 
 async function checkDateAsync()
 {
@@ -12,18 +18,20 @@ async function checkDateAsync()
         //console.log('checking date');
         checkDate(resolve);
     });
-};
+}
+
 
 function checkDate(resolve)
 {
     let now = moment();
     let month = now.format('MMMM');
     let date = now.format('D');
+    let datestamp = `${month} - ${date}`;
 
-    if(lastDate !== month + date)
+    if(lastDate !== datestamp)
     {
-        lastDate = month + date;
-        console.log(`${month} - ${date}`);
+        lastDate = datestamp;
+        console.log(`datestamp: ${datestamp}`);
         
         fs.readFile('dates.json', (err, data) =>
         {
@@ -32,7 +40,7 @@ function checkDate(resolve)
             let dates = JSON.parse(data);
             
             day = dates[month].find(d => d.date === date)
-            console.log(day);
+            console.log(`day: ${day}`);
             resolve && resolve();
         });   
     }
@@ -46,7 +54,7 @@ module.exports =
         await checkDateAsync();
         return day;
     }
-}v
+}
 /*/
 exports.getData = async () => {
                             await checkDateAsync();
