@@ -1,7 +1,5 @@
 
 const sunstatus = require('./sunStatus')
-const http = require('http');
-const express = require('express');
 const socketio = require('socket.io');
 //const Gpio = require('pigpio').Gpio;
 const pigpio = require('pigpio');
@@ -58,16 +56,7 @@ let easeB = new DynamicEase(0, Object.assign({}, lightOptions, {maxChangePerSec:
         }
     });
 
-// --- routing -------------------------------------
 
-app.get('/', (request, result) => 
-{
-    result.send('huloo');
-});
-
-// --- routing end ---------------------------------
-
-const port = process.env.PORT || 8080;
 
 
 io.on('connection', (socket) =>
@@ -94,8 +83,6 @@ io.on('connection', (socket) =>
 // socket.onAny((eventName, ...args) => {
 //     console.log(`any : ${eventName} :: ${args.length}`);
 // });
-
-server.listen(port, () => console.log(`listening on ${port}`));
 
 
 
