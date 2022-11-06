@@ -2,15 +2,28 @@
 TODO:
 =====
 
+    - start on boot
+        - /etc/rc.local
+        - # run screen called 'chick', execute the chickenpi node app, on termination run bash (which stops screen from just terminating if you're in there enditing things)
+        - screen -dmS pihub bash -c 'cd /home/pi/pihub; sudo node index.js; exec bash'
+
+    - add animation object config to config.json blob
+    
     - sunrise / sunset times
-        - load json for date
-        - get date, compare time to sunset
-    - json payload
+        - sunstatus.js
+            - do better
+            - load json for date
+            - get date, compare time to sunset
+    - json websocket payload
+        - allow more standardised processing of messages?
     - statuses:
         - connected (support multiple?)
         - disconnected 
 
+    - refactor lib/Settings to use lib/ReactiveObjectModel
 
+    blynk interface
+    web interface
 
 DONE:
 ====
