@@ -1,3 +1,28 @@
+//*
+// subvert the console
+(function()
+{
+    let { log, debug, error } = global.console;
+    global.console.log = (msg) => log(`log ${(new Date()).toISOString()}: ${msg}`);
+    // global.console.debug = (msg) => debug(`dbg ${(new Date()).toISOString()}: ${msg}`);
+    global.console.debug = () => {};
+    // global.console.error = (msg) => 
+    // {
+    //     if(msg instanceof Error) console.log('is Error');
+    //     if(msg.message) 
+    //     {
+    //         log(`has message: ${msg.message}`);
+    //         log(`stack: ${msg.stack}`);
+    //         log(`stackTraceLimit: ${Error.stackTraceLimit}`);
+    //         msg.message = `err ${(new Date()).toISOString()}: ${msg.message}`;
+    //         error(msg.message);
+    //         error(msg.stack)
+    //     }
+    //     else
+    //         error(msg);     
+    // };
+})()
+//*/
 
 //console.log(`stl: ${Error.stackTraceLimit}`);
 
@@ -24,6 +49,7 @@ const settings = new Settings(
                             clamp: { lower: 0, upper: 255},
                             round: true
                         },
+                        green: { maxChangePerSec: 99999, stepMillis: 10 },
                         //blue: { maxChangePerSec: Infinity, acc: 1, stepMillis: 50 }
                         blue: { maxChangePerSec: 99999, acc: 1, stepMillis: 50 }
                     }
@@ -36,6 +62,8 @@ function merge(base, mods)
 }
 
 let config = null;
+let isConnected = false; 
+let isDoorClosed = false; 
 
 async function go()
 {
@@ -63,8 +91,11 @@ async function go()
     //let start = Date.now();
 
     //let easeB = new DynamicEase(0, Object.assign({}, lightOptions, {maxChangePerSec: Infinity, acc: 1, stepMillis: 50}),
-    let bOptions = merge(config.lightOptions, config.blue);
-    let easeB = new DynamicEase(0, bOptions,
+    let redOptions = config.lightOptions;
+    let grnOptions = merge(config.lightOptions, config.green);
+    let bluOptions = merge(config.lightOptions, config.blue);
+
+    let easeB = new DynamicEase(0, bluOptions,
                     {
                         onUpdate: pwm => 
                         {   
@@ -78,14 +109,33 @@ async function go()
                         }
                     });
 
+    // let easeG = new DynamicEase(0, grnOptions,
+    //     {
+    //         onUpdate: pwm => 
+    //         {   
+    //             //console.log(`${Date.now() - start}, ${pwm}`);
+    //             doorLightB.pwmWrite(pwm);
+    //         },
+    //         onComplete: ease => 
+    //         {
+    //             //console.log(`completed: ${ease.target}`);
+    //             ease.set(ease.target === 0 ? 128 : 0);
+    //         }
+    //     });
 
 
     io.on('connection', (socket) =>
     {
         console.log('websocket connection');
-        socket.on("disconnecting", (reason) => console.log(`disconnected: ${reason}`)); 
+        isConnected = true;
 
-        let easeR = new DynamicEase(0, config.lightOptions,
+        socket.on("disconnecting", (reason) => 
+        {
+            console.log(`disconnected: ${reason}`);
+            isDoorClosed = isConnected = false;
+        }); 
+
+        let easeR = new DynamicEase(0, redOptions,
                         {
                             onUpdate: pwm => doorLightR.pwmWrite(pwm),
                             onComplete: null //() => console.log(`completed`)
@@ -94,7 +144,8 @@ async function go()
         socket.on('test', (msg) => 
         {
             console.log(`test: ${msg}`);
-            easeR.set(msg === 'door open' ? 255 : 0);
+            isDoorClosed = (msg === 'door closed');
+            easeR.set(isDoorClosed ? 0 : 255);
         });
     });
 
