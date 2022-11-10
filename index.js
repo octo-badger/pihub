@@ -1,10 +1,19 @@
+
+const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+function timestamp()
+{
+    let d = new Date();
+    return `${d.getFullYear()}${d.getMonth()}${d.getMonth()}-${d.toLocaleTimeString('default', timeOptions)}.` + `${d.getMilliseconds()}`.padStart(3, '0');
+}
+
 //*
 // subvert the console
 (function()
 {
     let { log, debug, error } = global.console;
-    global.console.log = (msg) => log(`log ${(new Date()).toISOString()}: ${msg}`);
-    // global.console.debug = (msg) => debug(`dbg ${(new Date()).toISOString()}: ${msg}`);
+    global.console.log = (msg) => log(`log ${timestamp()}: ${msg}`);
+    // global.console.debug = (msg) => debug(`dbg ${timestamp()}: ${msg}`);
     global.console.debug = () => {};
     // global.console.error = (msg) => 
     // {
@@ -14,7 +23,7 @@
     //         log(`has message: ${msg.message}`);
     //         log(`stack: ${msg.stack}`);
     //         log(`stackTraceLimit: ${Error.stackTraceLimit}`);
-    //         msg.message = `err ${(new Date()).toISOString()}: ${msg.message}`;
+    //         msg.message = `err ${timestamp()}: ${msg.message}`;
     //         error(msg.message);
     //         error(msg.stack)
     //     }
