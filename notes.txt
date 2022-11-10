@@ -4,8 +4,8 @@ TODO:
 
     - start on boot
         - /etc/rc.local
-        - # run screen called 'chick', execute the chickenpi node app, on termination run bash (which stops screen from just terminating if you're in there enditing things)
-        - screen -dmS pihub bash -c 'cd /home/pi/pihub; sudo node index.js; exec bash'
+        - # as user pi: run screen called 'pihub', execute the pihub node app, on termination run bash (which stops screen from just terminating if you're in there enditing things)
+        - su - pi -c "screen -dmS pihub bash -c 'cd /home/pi/pihub; sudo node index.js; exec bash'"
 
     - add animation object config to config.json blob
     
