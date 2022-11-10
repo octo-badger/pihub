@@ -51,6 +51,12 @@ const settings = new Settings(
                 { 
                     defaultData:
                     {
+                        pins: 
+                        {
+                            doorLightR: 26,
+                            doorLightG: 6,
+                            doorLightB: 5
+                        },
                         lightOptions: 
                         {
                             maxChangePerSec: 200, 
@@ -79,19 +85,7 @@ async function go()
     config = await settings.load('config.json');
     console.log(`sunstatus: ${JSON.stringify(await sunstatus.getData())}`);
 
-    let pins = {
-        doorLightR: 26,
-        doorLightG: 6,
-        doorLightB: 5
-    };
-
-    // let lightOptions = 
-    // {
-    //     maxChangePerSec: 200, 
-    //     acc: 5, 
-    //     clamp: { lower: 0, upper: 255},
-    //     round: true
-    // };
+    let pins = config.pins;
 
     const doorLightR = new Gpio(pins.doorLightR, { mode: Gpio.OUTPUT });
     const doorLightG = new Gpio(pins.doorLightG, { mode: Gpio.OUTPUT });
