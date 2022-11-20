@@ -10,6 +10,29 @@ function timestamp()
 
 global.debugLog = [];
 
+/*
+let x = [1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3];
+let s = 8; 
+let e = 18;
+let y = x.slice(s, e);
+
+for(let i=20; i>0; i--)
+{
+    let iy = y.findIndex(l => l === 1);
+    console.log(iy);
+    if(iy>=0) 
+    {
+        y.splice(iy, 1);
+        let ix = iy + s;
+        console.log(ix);
+        x.splice(ix, 1);
+    }
+}
+console.dir(x);
+console.dir(y);
+//*/
+
+
 
 const logSize = 120;
 let log3rd = Math.floor(logSize / 3);
