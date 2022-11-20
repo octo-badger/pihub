@@ -4,7 +4,7 @@ const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hou
 function timestamp()
 {
     let d = new Date();
-    return `${d.getFullYear()}${d.getMonth()}${d.getMonth()}-${d.toLocaleTimeString('default', timeOptions)}.` + `${d.getMilliseconds()}`.padStart(3, '0');
+    return `${d.getFullYear()}${d.getMonth()+1}${d.getDate()}-${d.toLocaleTimeString('default', timeOptions)}.` + `${d.getMilliseconds()}`.padStart(3, '0');
 }
 
 
