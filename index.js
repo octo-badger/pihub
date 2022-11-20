@@ -7,14 +7,62 @@ function timestamp()
     return `${d.getFullYear()}${d.getMonth()}${d.getMonth()}-${d.toLocaleTimeString('default', timeOptions)}.` + `${d.getMilliseconds()}`.padStart(3, '0');
 }
 
+
+global.debugLog = [];
+
+
+const logSize = 120;
+let log3rd = Math.floor(logSize / 3);
+
+
 //*
 // subvert the console
 (function()
 {
+    let persist = (logEntry, tags) => setTimeout(() => 
+    {
+        debugLog.push({ log: logEntry, tags: tags.join('-')});
+        
+        // let logWindow = debugLog.slice(windowSize);
+        let windowSize = log3rd + Math.ceil(Math.random() * log3rd);
+
+        for(let i=5; debugLog.length > logSize && i>0; i--)            // (only might remove >1 if log fills with 'keeps' - probably not worth it, but...) while debugLog has more than N entries, up to a maximum of 5 times
+        {
+            /*
+            let iy = logWindow.findIndex(log => /\blow\b/.test(log.tags));
+            if(iy < 0) iy = logWindow.findIndex(log => !/\bkeep\b/.test(log.tags));
+            
+            if(iy >= 0) 
+            {
+                logWindow.splice(iy, 1);
+                let ix = iy;
+                debugLog.splice(ix, 1);
+            }
+            /*/
+            let iy = debugLog.findIndex((log, j) => j < windowSize && /\blow\b/.test(log.tags));
+            if(iy < 0) iy = debugLog.findIndex(log => !/\bkeep\b/.test(log.tags));
+            if(iy >= 0) debugLog.splice(iy, 1);
+            //*/
+        }
+    }, 10);
+
     let { log, debug, error } = global.console;
-    global.console.log = (msg) => log(`log ${timestamp()}: ${msg}`);
-    // global.console.debug = (msg) => debug(`dbg ${timestamp()}: ${msg}`);
-    global.console.debug = () => {};
+
+    global.console.log = (msg, ...tags) => 
+    {
+        let logEntry = `log ${timestamp()}: ${msg}`;
+        log(logEntry);
+        persist(logEntry, tags);
+    }
+
+    global.console.debug = (msg, ...tags) => 
+    {
+        let logEntry = `dbg ${timestamp()}: ${msg}`;
+        //debug(log);
+        persist(logEntry, tags);
+    };
+
+    // global.console.debug = () => {};
     // global.console.error = (msg) => 
     // {
     //     if(msg instanceof Error) console.log('is Error');
@@ -34,6 +82,7 @@ function timestamp()
 //*/
 
 //console.log(`stl: ${Error.stackTraceLimit}`);
+console.log(`Starting`, 'lifecycle', 'keep');
 
 const server = require('./server');
 const socketio = require('socket.io');
@@ -81,8 +130,14 @@ let isDoorClosed = false;
 
 async function go()
 {
+    console.log(`config settings loading`, 'lifecycle', 'config', 'keep');
     config = await settings.load('config.json');
-    console.log(`sunstatus: ${JSON.stringify(await sunstatus.getData())}`);
+
+    console.log(`sunstatus event registration`, 'lifecycle', 'socketio', 'keep');
+    sunstatus.on('sunset', -20, () => console.log('sunset callback', 'keep'));
+    sunstatus.on('sunrise', 53, () => console.log('sunrise callback', 'keep'));
+    
+    console.log(`sunstatus: ${JSON.stringify(await sunstatus.getDay())}`, 'sunstatus', 'keep');
 
     let pins = config.pins;
 
@@ -128,36 +183,40 @@ async function go()
 
     let updateState = () =>
     {
-        console.debug(`setting door closed: ${isDoorClosed}`);
+        console.debug(`setting door closed: ${isDoorClosed}`, 'update', 'door');
         //easeR.set(isDoorClosed ? 0 : 255);
         isDoorClosed ? easeR.pause(0) : easeR.resume();
 
-        console.debug(`setting connected: ${isConnected}`);
+        console.debug(`setting connected: ${isConnected}`, 'update', 'connection');
         //easeG.set(isConnected ? 0 : 255);
         isConnected ? easeG.pause(0) : easeG.resume();
     };
 
 
+    console.log(`socket.io event registration`, 'lifecycle', 'socketio', 'keep');
+
     io.on('connection', (socket) =>
     {
-        console.log('websocket connection');
+        console.log('websocket connection', 'event');
         isConnected = true;
         updateState();
 
         socket.on("disconnecting", (reason) => 
         {
-            console.log(`disconnected: ${reason}`);
+            console.log(`disconnected: ${reason}`, 'event');
             isDoorClosed = isConnected = false;
             updateState();
         }); 
 
         socket.on('door', (msg) => 
         {
-            console.log(`door ${msg}`);
+            console.log(`door ${msg}`, 'event');
             isDoorClosed = (msg === 'closed');
             updateState();
         });
     });
+
+
 
 
     // socket.on('test', (msg) => console.log(`test: ${msg}`));

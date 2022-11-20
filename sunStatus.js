@@ -7,6 +7,8 @@
 const moment = require('moment');
 const fs = require('fs');
 
+console.log(`Starting sunStatus`, 'lifecycle', 'keep');
+
 let day = null;
 let lastDate = null;
 
@@ -15,7 +17,7 @@ async function checkDateAsync()
 {
     return new Promise(async (resolve) =>
     {
-        //console.log('checking date');
+        //console.debug('checking date');
         checkDate(resolve);
     });
 }
@@ -23,6 +25,7 @@ async function checkDateAsync()
 
 function checkDate(resolve)
 {
+    console.debug('in checkDate()', 'sunstatus', 'low');
     let now = moment();
     let month = now.format('MMMM');
     let date = now.format('D');
@@ -31,7 +34,7 @@ function checkDate(resolve)
     if(lastDate !== datestamp)
     {
         lastDate = datestamp;
-        console.log(`datestamp: ${datestamp}`);
+        console.debug(`datestamp: ${datestamp}`, 'sunstatus', 'low');
         
         fs.readFile('dates.json', (err, data) =>
         {
@@ -40,7 +43,7 @@ function checkDate(resolve)
             let dates = JSON.parse(data);
             
             day = dates[month].find(d => d.date === date)
-            console.log(`day: ${day}`);
+            //console.debug(`day: ${day}`, 'sunstatus');
             resolve && resolve();
         });   
     }
