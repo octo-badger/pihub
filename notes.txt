@@ -2,18 +2,8 @@
 TODO:
 =====
 
-    - start on boot
-        - /etc/rc.local
-        - # as user pi: run screen called 'pihub', execute the pihub node app, on termination run bash (which stops screen from just terminating if you're in there enditing things)
-        - su - pi -c "screen -dmS pihub bash -c 'cd /home/pi/pihub; sudo node index.js; exec bash'"
-
     - add animation object config to config.json blob
     
-    - sunrise / sunset times
-        - sunstatus.js
-            - do better
-            - load json for date
-            - get date, compare time to sunset
     - json websocket payload
         - allow more standardised processing of messages?
     - statuses:
@@ -22,13 +12,24 @@ TODO:
 
     - refactor lib/Settings to use lib/ReactiveObjectModel
 
-    blynk interface
+    blynk interface (prob not with the new version - cost)
     web interface
 
 DONE:
 ====
 
+    - log reporting API
+
+    - start on boot
+        - /etc/rc.local
+        - # as user pi: run screen called 'pihub', execute the pihub node app, on termination run bash (which stops screen from just terminating if you're in there enditing things)
+        - su - pi -c "screen -dmS pihub bash -c 'cd /home/pi/pihub; sudo node index.js; exec bash'"
+
     - sunrise / sunset times
         - parse scraped data
         - create JSON file
+        - sunstatus.js
+            - do better
+            - load json for date
+            - get date, compare time to sunset
 
