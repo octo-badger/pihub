@@ -50,6 +50,113 @@ function checkDate(resolve)
 }
 
 /*
+    async getDay() // return day (only load day if it's the first time)
+
+    on('sunset', offset, callback)  // subscribe to an event, with an offset
+
+    // setInterval(checkSubs, 1000 * 60)    // 
+
+*/
+
+let subscriptions = [];
+const eventNames = ['sunrise', 'sunset'];
+
+
+/**
+ * subscribe to an event
+ * @param {string} eventName the name of the event being subscribed to
+ * @param {number} offset positive or negative minutes
+ * @param {function} callback the callback to fire on event
+ */
+function on(eventName, offset, callback)
+{
+    console.debug(`registering on ${eventName} with offset ${offset}`, 'sunstatus');
+    if(!eventNames.some(en => eventName === en))        // check eventName
+        console.warn('unknown event: ' + eventName, 'sunstatus');
+
+    subscriptions.push({
+        event: eventName,
+        offset: offset,
+        callback: callback
+    });
+}
+
+
+function check()
+{
+    console.debug('in check()', 'sunstatus');
+    checkDate();
+    checkSubscriptions();
+}
+
+
+function checkSubscriptions()
+{
+    console.debug('in checkSubscriptions()', 'sunstatus', 'low');
+    let nowStamp = _asTimestamp(new Date());
+    
+    subscriptions.forEach(sub => 
+        {
+            sub.lastCalled !== nowStamp && (sub.lastCalled = null);       
+
+            let offestTimestamp = _offestTimestamp(sub);
+            console.debug(`nowStamp: ${nowStamp}, offestTimestamp: ${offestTimestamp}, sub.lastCalled: ${sub.lastCalled}`, 'sunstatus');
+
+            if(sub.lastCalled !== nowStamp && offestTimestamp === nowStamp)
+            {
+                sub.callback();
+                sub.lastCalled = nowStamp;
+            }
+        });
+}
+
+
+/**
+ * get the timestamp offset from the day
+ * @param {subscription} subscription subscription object
+ * @returns hours / minutes timestamp
+ */
+function _offestTimestamp(subscription)
+{
+    console.debug('in _offestTimestamp() ' + day[subscription.event], 'sunstatus', 'low');
+    let eventTime = _time(day[subscription.event]);
+    console.debug('subscription.offset ' + subscription.offset, 'sunstatus', 'low');
+    let offsetDatetime = new Date(eventTime.getTime() + (subscription.offset * 60000));
+    return _asTimestamp(offsetDatetime);
+}
+
+
+/**
+ * get a date object with the time set to the timestamp
+ * @param {string} timstamp hours / minutes timestamp
+ * @returns date object from the timestamp
+ */
+function _time(timstamp)
+{
+    console.debug('in _time()', 'sunstatus', 'low');
+    let grps = /(?<hours>\d+):(?<minutes>\d+)/.exec(timstamp).groups;
+    let time = new Date();
+    console.debug(`= ${grps.hours}:${grps.minutes}`, 'sunstatus', 'low');
+    time.setHours(grps.hours);
+    time.setMinutes(grps.minutes);
+    return time;
+}
+
+
+function _asTimestamp(datetime)
+{
+    console.debug('in _asTimestamp()', 'sunstatus', 'low');
+    return `${datetime.getHours()}`.padStart(2, '0') + ':' + `${datetime.getMinutes()}`.padStart(2, '0');
+}
+
+
+let getDay = async () => {
+                        console.debug('in getDay()', 'sunstatus', 'low');
+                        if(day == null) await checkDateAsync();
+                        checkSubscriptions();
+                        return day;
+                    };
+/*
 module.exports = 
 {
     getData: async () => 
@@ -59,12 +166,10 @@ module.exports =
     }
 }
 /*/
-exports.getData = async () => {
-                            await checkDateAsync();
-                            return day;
-                        }
+exports.getDay = getDay;
+exports.on = on;
 //*/
 
-//setInterval(checkDate, 600000);
-setInterval(checkDate, 6000);
+//setTimeout(check, 1);
+setInterval(check, 30000);
 
