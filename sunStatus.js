@@ -128,21 +128,26 @@ function _offestTimestamp(subscription)
 
 /**
  * get a date object with the time set to the timestamp
- * @param {string} timstamp hours / minutes timestamp
+ * @param {string} timeStamp timestamp in "hours:minutes" format
  * @returns date object from the timestamp
  */
-function _time(timstamp)
+function _time(timeStamp)
 {
     console.debug('in _time()', 'sunstatus', 'low');
-    let grps = /(?<hours>\d+):(?<minutes>\d+)/.exec(timstamp).groups;
-    let time = new Date();
+    let grps = /(?<hours>\d+):(?<minutes>\d+)/.exec(timeStamp).groups;                          // liberate the hours and minutes from the timeStamp
     console.debug(`= ${grps.hours}:${grps.minutes}`, 'sunstatus', 'low');
-    time.setHours(grps.hours);
-    time.setMinutes(grps.minutes);
+    let time = new Date();                                                                      // create a new date object
+    time.setHours(grps.hours);                                                                  // set hours
+    time.setMinutes(grps.minutes);                                                              // set minutes
     return time;
 }
 
 
+/**
+ * Extract an "<hours>:<minutes>" timestamp from the passed date object
+ * @param {Date} datetime date object
+ * @returns string timestamp
+ */
 function _asTimestamp(datetime)
 {
     console.debug('in _asTimestamp()', 'sunstatus', 'low');
