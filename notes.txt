@@ -2,6 +2,15 @@
 TODO:
 =====
 
+    investigate (looks like process is killed for using too much RAM):
+        pi@pihub:~ $ dmesg | grep Killed
+        [802358.343945] Killed process 21805 (node) total-vm:498916kB, anon-rss:326200kB, file-rss:412kB, shmem-rss:0kB
+
+        keep sshd up
+        https://forums.raspberrypi.com/viewtopic.php?t=256206
+        https://www.crawford-space.co.uk/old_psc/watchdog/watchdog-background.html
+        https://forums.raspberrypi.com/viewtopic.php?f=29&t=151179&p=993073#p993073
+
     - add animation object config to config.json blob
     
     - json websocket payload
