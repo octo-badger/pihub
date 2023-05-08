@@ -24,9 +24,10 @@
 const navi = require('../lib/Navi');
 const http = require('http');
 
-navi.wake(__filename);
-const port = 3230;
-
+//navi.wake(__filename);
+//navi.init();
+//const port = 3230;
+/*
 function spinUpServer()
 {
     console.log(`${port}: creating server`);
@@ -69,6 +70,7 @@ function spinUpServer()
     });
 }
 spinUpServer();
+//*/
 
 let count = 3;
 
@@ -76,7 +78,7 @@ function go()
 {
     setTimeout(() =>
     {
-        console.log(`${port}: parent ${count}`);
+        console.log(`test-navi.js parent ${count} ****************************************************************************************`);
         if(count-- > 0) go();
     },
     1000);
